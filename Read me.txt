@@ -1,0 +1,24 @@
+
+El problema planteado es el de controlar el acceso a un recurso compartido utilizando un semáforo. En este caso, el recurso compartido es el propio programa, que solo puede ser utilizado por un cliente a la vez.
+
+El objetivo es implementar un algoritmo que simule el comportamiento de un semáforo real, con tres estados: verde, amarillo y rojo. Los clientes deben esperar a que el semáforo esté en verde para poder acceder al recurso, y el tiempo de espera en cada estado está definido.
+
+Además, el programa debe utilizar recursividad para resolver el problema y seguir las buenas prácticas de programación, incluyendo nombres de variables descriptivos, una estructura clara y legible, y la indentación estándar de Python.
+
+Solución:
+
+El código proporcionado implementa una solución al problema utilizando recursividad. La función semaforo utiliza un ciclo infinito para simular el comportamiento del semáforo. Dentro del ciclo, se adquieren y liberan los recursos del semáforo usando with semaphore. Se imprime el estado actual del semáforo y se espera un tiempo determinado en cada estado. La llamada recursiva al final de la función asegura que el ciclo del semáforo se repita indefinidamente.
+
+La función handle_connection se encarga de cada conexión entrante. Se imprime información sobre la conexión y se recibe la solicitud del cliente. Se ejecuta la función semaforo para controlar el acceso al recurso compartido. Finalmente, se cierra la conexión.
+
+Consideraciones:
+
+El uso de recursividad puede no ser la solución más eficiente para este problema, especialmente para sistemas con recursos limitados.
+Se pueden implementar otras soluciones usando bucles while o temporizadores para controlar el ciclo del semáforo.
+Es importante tener en cuenta la seguridad del código al trabajar con sockets y conexiones de red.
+
+Mejoras:
+
+Se puede mejorar la eficiencia del código utilizando un bucle while en lugar de recursividad.
+Se puede implementar un sistema de colas para gestionar las solicitudes de los clientes cuando el semáforo está ocupado.
+Se pueden añadir medidas de seguridad para proteger el programa de ataques y vulnerabilidades.
