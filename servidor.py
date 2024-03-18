@@ -54,6 +54,8 @@ def semaforo():
 
             print("Rojo")
             time.sleep(3)
+        # Llamada recursiva para mantener el ciclo del semáforo
+        semaforo()
 
 
 def handle_connection(conexion, addr):
@@ -63,8 +65,7 @@ def handle_connection(conexion, addr):
     request = conexion.recv(1024)
     print(request)
 
-    # Llamamos a la función semaforo para controlar el semáforo
-
+    # Se ejecuta la función semaforo para controlar el acceso
     semaforo()
 
     conexion.close()
