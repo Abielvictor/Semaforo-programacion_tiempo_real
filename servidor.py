@@ -37,10 +37,13 @@ my_socket = socket.socket()
 my_socket.bind(('localhost', 8000))
 my_socket.listen(5)
 
+# Creamos un semáforo con un valor inicial de 1
 semaphore = threading.Semaphore(1)
 
+# Creamos un evento para señalizar cuando se debe detener el semáforo
 stop_event = threading.Event()
 
+# Lista para almacenar los estados del semáforo
 semaforo_estados = []
 
 
@@ -71,6 +74,7 @@ def handle_connection(conexion, addr):
         print(request)
         conexion.send(b'Semaforo inteligente - Respuesta')
 
+        # Guardar los estados del semáforo en un archivo txt
         with open("estados_semaforo.txt", "w") as file:
             file.write("\n".join(semaforo_estados))
             file.write("\n")
@@ -81,16 +85,19 @@ def handle_connection(conexion, addr):
         conexion.close()
 
 
+# Creamos un hilo para el semáforo
 sem_thread = threading.Thread(target=semaforo)
 sem_thread.start()
 
 while True:
     try:
         conexion, addr = my_socket.accept()
+        # Creamos un hilo para manejar cada conexión
         threading.Thread(target=handle_connection,
                          args=(conexion, addr)).start()
     except Exception as e:
         print(f"Error al aceptar conexión: {e}")
 
+# Evento para detener el semáforo cuando se cierre el socket
 stop_event.set()
 my_socket.close()
