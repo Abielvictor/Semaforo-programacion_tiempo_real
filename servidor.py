@@ -37,43 +37,60 @@ my_socket = socket.socket()
 my_socket.bind(('localhost', 8000))
 my_socket.listen(5)
 
-# Creamos un semáforo con un valor inicial de 1
-
 semaphore = threading.Semaphore(1)
+
+stop_event = threading.Event()
+
+semaforo_estados = []
 
 
 def semaforo():
-    global semaphore
-    while True:
-        with semaphore:
-            print("Verde")
-            time.sleep(1)
+    global semaphore, stop_event, semaforo_estados
+    try:
+        while not stop_event.is_set():
+            with semaphore:
+                semaforo_estados.append("Verde")
+                time.sleep(1)
 
-            print("Amarillo")
-            time.sleep(1)
+                semaforo_estados.append("Amarillo")
+                time.sleep(1)
 
-            print("Rojo")
-            time.sleep(3)
-        # Llamada recursiva para mantener el ciclo del semáforo
-        semaforo()
+                semaforo_estados.append("Rojo")
+                time.sleep(3)
+    except Exception as e:
+        print(f"Error en el semáforo: {e}")
 
 
 def handle_connection(conexion, addr):
+    global semaforo_estados
     print('Conectado')
     print(addr)
 
-    request = conexion.recv(1024)
-    print(request)
+    try:
+        request = conexion.recv(1024)
+        print(request)
+        conexion.send(b'Semaforo inteligente - Respuesta')
 
-    # Se ejecuta la función semaforo para controlar el acceso
-    semaforo()
+        with open("estados_semaforo.txt", "w") as file:
+            file.write("\n".join(semaforo_estados))
+            file.write("\n")
+            file.close()
+    except Exception as e:
+        print(f"Error en la conexión: {e}")
+    finally:
+        conexion.close()
 
-    conexion.close()
 
+sem_thread = threading.Thread(target=semaforo)
+sem_thread.start()
 
 while True:
-    conexion, addr = my_socket.accept()
+    try:
+        conexion, addr = my_socket.accept()
+        threading.Thread(target=handle_connection,
+                         args=(conexion, addr)).start()
+    except Exception as e:
+        print(f"Error al aceptar conexión: {e}")
 
-    # Creamos un hilo para manejar cada conexión
-
-    threading.Thread(target=handle_connection, args=(conexion, addr)).start()
+stop_event.set()
+my_socket.close()
